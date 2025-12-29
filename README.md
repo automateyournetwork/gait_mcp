@@ -14,6 +14,15 @@ GAIT lets AI assistants track conversations, code changes, and context the same 
 
 ## Install dependencies
 
+## Option 1: Using uv (recommended)
+
+```bash
+uv sync
+uv run python -u gait_mcp.py
+```
+
+## Option 2: Using pip
+
 Create and activate a virtual environment:
 
 ```bash
@@ -179,6 +188,7 @@ Once initialized, GAIT should track the conversation automatically.
 
 ## Notes
 
+After revert, gait_resume is the source of truth
 - GAIT refuses to initialize at filesystem root by design
 - The Copilot chat transcript cannot be erased, but GAIT history can be rewound
 - After revert, `gait_resume` is the source of truth
