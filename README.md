@@ -18,6 +18,15 @@ Cloud-backed remotes via GAITHUB-compatible servers
 
 Install dependencies
 
+## Option 1: Using uv (recommended)
+
+```bash
+uv sync
+uv run python -u gait_mcp.py
+```
+
+## Option 2: Using pip
+
 Create and activate a virtual environment:
 
 python3 -m venv .venv
