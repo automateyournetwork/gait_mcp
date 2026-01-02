@@ -908,6 +908,51 @@ def gait_resume(
 
     return bundle
 
+# ---------------------------------------------------------------------
+# Squash 
+# ---------------------------------------------------------------------
+@mcp.tool(description="Squash the last N turn-commits into one summary commit (context compression). Safe by default (mode=soft creates a backup ref).")
+@mcp_tool
+def gait_summarize_and_squash(
+    last: int = 10,
+    mode: str = "soft",
+    message: str = "",
+    include_merges: bool = False,
+    path: Optional[str] = None,
+) -> Dict[str, Any]:
+    repo, err = _try_repo(path)
+    if err:
+        return err
+    assert repo is not None
+
+    r = repo.summarize_and_squash(
+        last=int(last),
+        mode=(mode or "soft").strip().lower(),
+        message=message or "",
+        include_merges=bool(include_merges),
+    )
+
+    return {
+        "ok": True,
+        "branch": r["branch"],
+        "mode": r["mode"],
+        "old_head": short_oid(r["old_head"]),
+        "new_head": short_oid(r["new_head"]),
+        "old_head_full": r["old_head"],
+        "new_head_full": r["new_head"],
+        "backup_ref": r.get("backup_ref", ""),
+        "squashed_commits": [short_oid(x) for x in r.get("squashed_commits", [])],
+        "squashed_commits_full": r.get("squashed_commits", []),
+        "base_parent": short_oid(r["base_parent"]) if r.get("base_parent") else "(empty)",
+        "turns_squashed": r.get("turns_squashed", 0),
+        "summary_turn_id": short_oid(r.get("summary_turn_id", "")),
+        "instruction": (
+            "HISTORY REWRITTEN: Do NOT call gait_record_turn for this action. "
+            "Immediately call gait_resume(turns=...) to re-sync your working context."
+        ),
+    }
+
+
 if __name__ == "__main__":
     log.info("GAIT MCP Server starting up...")
     try:
