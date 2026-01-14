@@ -1,0 +1,34 @@
+# Python virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# UV lock file
+uv.lock
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# GAIT MCP sticky file
+.gait_mcp_root

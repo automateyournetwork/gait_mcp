@@ -1,0 +1,22 @@
+[project]
+name = "gait-mcp"
+version = "0.1.0"
+description = "A Model Context Protocol (MCP) server for Git for Artificial Intelligence Tracking (GAIT)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = [
+    "mcp",
+    "fastmcp",
+    "gait-ai",
+]
+
+[project.scripts]
+gait-mcp = "gait_mcp:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = []

@@ -959,3 +959,7 @@ if __name__ == "__main__":
         mcp.run()
     except Exception as e:
         log.error(f"Server crashed: {e}")
+
+
+if __name__ == "__main__":
+    main()
