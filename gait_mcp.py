@@ -1104,6 +1104,25 @@ def gait_summarize_and_squash(
     }
 
 
+# ---------------------------------------------------------------------
+# Patch tool schemas to ensure 'required' field always exists
+# (FlowAI expects 'required' to be iterable, even if empty)
+# ---------------------------------------------------------------------
+def _patch_tool_schemas():
+    """Ensure all tool schemas have a 'required' field for FlowAI compatibility."""
+    try:
+        tools = mcp._tool_manager._tools
+        for name, tool in tools.items():
+            if hasattr(tool, 'parameters') and isinstance(tool.parameters, dict):
+                if 'required' not in tool.parameters:
+                    tool.parameters['required'] = []
+                    log.debug(f"Patched schema for {name}: added empty 'required' array")
+    except Exception as e:
+        log.warning(f"Could not patch tool schemas: {e}")
+
+_patch_tool_schemas()
+
+
 if __name__ == "__main__":
     import uvicorn
 
