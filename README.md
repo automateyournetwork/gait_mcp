@@ -4,6 +4,14 @@ A Model Context Protocol (MCP) server for **Git for Artificial Intelligence Trac
 
 GAIT lets AI assistants track conversations, code changes, and context the same way Git tracks source code. This MCP server allows tools like VS Code Copilot, Gemini CLI, and Claude Desktop to persist AI turns, rewind history, branch ideas, and synchronize memory with your working directory.
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [README.md](README.md) | Quick start guide (this file) |
+| [MASTERCLASS](gait_mcp-MASTERCLASS.md) | Comprehensive guide with diagrams and rollback procedures |
+| [CLAUDE.md](CLAUDE.md) | Development rules and contribution guide |
+
 ## What this gives you
 
 - Automatic versioning of AI conversations
@@ -192,3 +200,25 @@ After revert, gait_resume is the source of truth
 - GAIT refuses to initialize at filesystem root by design
 - The Copilot chat transcript cannot be erased, but GAIT history can be rewound
 - After revert, `gait_resume` is the source of truth
+
+---
+
+## Learn More
+
+For a comprehensive understanding of GAIT MCP, read the **[MASTERCLASS](gait_mcp-MASTERCLASS.md)** which covers:
+
+1. **What are we doing here?** - The problem GAIT solves
+2. **How does it work?** - Architecture and data flow
+3. **Why does it work?** - Underlying principles
+4. **Why we choose to run this way** - Design decisions explained
+5. **What are the other options?** - Alternative approaches comparison
+6. **Why this option is better** - Feature comparison matrix
+7. **Rollback plan** - Recovery procedures when things go wrong
+
+For development guidelines and contribution rules, see **[CLAUDE.md](CLAUDE.md)**.
+
+---
+
+## License
+
+GPL-3.0 - See [LICENSE](LICENSE) for details.
