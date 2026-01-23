@@ -20,6 +20,7 @@ So we must accept and unpack those safely.
 from __future__ import annotations
 
 import functools
+import inspect
 import logging
 import os
 import re
@@ -376,6 +377,8 @@ def mcp_tool(fn):
             log.exception("tool failed: %s", fn.__name__)
             return _err(f"{fn.__name__} failed", detail=str(e))
 
+    # Preserve the original function's signature for FastMCP schema generation
+    wrapper.__signature__ = inspect.signature(fn)
     return wrapper
 
 
