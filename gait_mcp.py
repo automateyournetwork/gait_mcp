@@ -1105,13 +1105,8 @@ def gait_summarize_and_squash(
 
 
 if __name__ == "__main__":
-    import os
-
-    host = os.environ.get("GAIT_MCP_HOST", "0.0.0.0")
-    port = int(os.environ.get("GAIT_MCP_PORT", "8000"))
-
-    log.info(f"GAIT MCP Server starting (SSE mode on {host}:{port})...")
+    log.info("GAIT MCP Server starting (SSE mode)...")
     try:
-        mcp.run(transport="sse", host=host, port=port)
+        mcp.run(transport="sse")
     except Exception as e:
         log.error(f"Server crashed: {e}")
