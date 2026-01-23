@@ -382,9 +382,14 @@ def mcp_tool(fn):
 # ---------------------------------------------------------------------
 # Core repo tools
 # ---------------------------------------------------------------------
-@mcp.tool(description="Show GAIT repo status: root path, current branch, and HEAD commit id.")
+@mcp.tool()
 @mcp_tool
 def gait_status(path: Optional[str] = None) -> Dict[str, Any]:
+    """Show GAIT repo status: root path, current branch, and HEAD commit id.
+
+    Args:
+        path: Optional path to the GAIT repository
+    """
     repo, err = _try_repo(path)
     if err:
         return err
@@ -392,9 +397,14 @@ def gait_status(path: Optional[str] = None) -> Dict[str, Any]:
     return {"ok": True, "root": str(repo.root), "branch": repo.current_branch(), "head": repo.head_commit_id() or ""}
 
 
-@mcp.tool(description="Initialize GAIT tracking in the given folder (refuses filesystem root). Creates the .gait directory.")
+@mcp.tool()
 @mcp_tool
 def gait_init(path: str = ".") -> Dict[str, Any]:
+    """Initialize GAIT tracking in the given folder (refuses filesystem root). Creates the .gait directory.
+
+    Args:
+        path: Path to initialize GAIT repository (default: current directory)
+    """
     root = Path(path).resolve()
     if _is_filesystem_root(root):
         return _err("Refusing to initialize GAIT at filesystem root. cd into a working folder first.", path=str(root))
@@ -405,7 +415,7 @@ def gait_init(path: str = ".") -> Dict[str, Any]:
     return {"ok": True, "root": str(repo.root), "gait_dir": str(repo.gait_dir)}
 
 
-@mcp.tool(description="Create a new branch from an optional commit. Optionally inherit pinned memory. Use force=true to reset if exists.")
+@mcp.tool()
 @mcp_tool
 def gait_branch(
     name: str,
@@ -413,6 +423,14 @@ def gait_branch(
     inherit_memory: bool = True,
     force: bool = False,
 ) -> Dict[str, Any]:
+    """Create a new branch from an optional commit. Optionally inherit pinned memory. Use force=true to reset if exists.
+
+    Args:
+        name: Name of the branch to create
+        from_commit: Optional commit to branch from
+        inherit_memory: Whether to inherit pinned memory from current branch
+        force: If true, reset the branch if it already exists
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -433,9 +451,14 @@ def gait_branch(
         return {"ok": True, "created": False, "reset": True, "branch": name, "head": target or ""}
 
 
-@mcp.tool(description="Checkout an existing branch (updates current branch and HEAD).")
+@mcp.tool()
 @mcp_tool
 def gait_checkout(name: str) -> Dict[str, Any]:
+    """Checkout an existing branch (updates current branch and HEAD).
+
+    Args:
+        name: Name of the branch to checkout
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -445,9 +468,16 @@ def gait_checkout(name: str) -> Dict[str, Any]:
     return {"ok": True, "branch": repo.current_branch(), "head": repo.head_commit_id() or ""}
 
 
-@mcp.tool(description="Merge a source branch into the current branch, optionally merging memory.")
+@mcp.tool()
 @mcp_tool
 def gait_merge(source: str, message: str = "", with_memory: bool = False) -> Dict[str, Any]:
+    """Merge a source branch into the current branch, optionally merging memory.
+
+    Args:
+        source: Name of the branch to merge from
+        message: Optional merge commit message
+        with_memory: Whether to also merge pinned memory
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -460,9 +490,14 @@ def gait_merge(source: str, message: str = "", with_memory: bool = False) -> Dic
     return out
 
 
-@mcp.tool(description="List recent commits on the current branch (first-parent walk).")
+@mcp.tool()
 @mcp_tool
 def gait_log(limit: int = 20) -> Dict[str, Any]:
+    """List recent commits on the current branch (first-parent walk).
+
+    Args:
+        limit: Maximum number of commits to return (default: 20)
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -487,9 +522,14 @@ def gait_log(limit: int = 20) -> Dict[str, Any]:
     return {"ok": True, "branch": repo.current_branch(), "commits": commits}
 
 
-@mcp.tool(description="Show a commit (HEAD or id/prefix) including recorded turns and code artifacts.")
+@mcp.tool()
 @mcp_tool
 def gait_show(commit: str = "HEAD") -> Dict[str, Any]:
+    """Show a commit (HEAD or id/prefix) including recorded turns and code artifacts.
+
+    Args:
+        commit: Commit ID or prefix to show (default: HEAD)
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -531,9 +571,10 @@ def gait_show(commit: str = "HEAD") -> Dict[str, Any]:
 # ---------------------------------------------------------------------
 # Memory tools
 # ---------------------------------------------------------------------
-@mcp.tool(description="List pinned memory items (commit/turn references) for the current branch.")
+@mcp.tool()
 @mcp_tool
 def gait_memory() -> Dict[str, Any]:
+    """List pinned memory items (commit/turn references) for the current branch."""
     repo, err = _try_repo()
     if err:
         return err
@@ -546,9 +587,14 @@ def gait_memory() -> Dict[str, Any]:
     return {"ok": True, "branch": repo.current_branch(), "pinned": len(items), "items": items}
 
 
-@mcp.tool(description="Build a context bundle from pinned memory (full=false is compact; full=true expands).")
+@mcp.tool()
 @mcp_tool
 def gait_context(full: bool = False) -> Dict[str, Any]:
+    """Build a context bundle from pinned memory (full=false is compact; full=true expands).
+
+    Args:
+        full: If true, expand full context; if false, return compact version
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -556,9 +602,16 @@ def gait_context(full: bool = False) -> Dict[str, Any]:
     return {"ok": True, "bundle": repo.build_context_bundle(full=full)}
 
 
-@mcp.tool(description="Pin a commit (or last commit) into GAIT memory with an optional note.")
+@mcp.tool()
 @mcp_tool
 def gait_pin(commit: Optional[str] = None, last: bool = True, note: str = "") -> Dict[str, Any]:
+    """Pin a commit (or last commit) into GAIT memory with an optional note.
+
+    Args:
+        commit: Optional specific commit to pin
+        last: If true and no commit specified, pin the last commit
+        note: Optional note to attach to the pinned memory item
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -568,9 +621,14 @@ def gait_pin(commit: Optional[str] = None, last: bool = True, note: str = "") ->
     return {"ok": True, "memory_id": mem_id}
 
 
-@mcp.tool(description="Unpin a memory item by 1-based index from gait_memory.")
+@mcp.tool()
 @mcp_tool
 def gait_unpin(index: int) -> Dict[str, Any]:
+    """Unpin a memory item by 1-based index from gait_memory.
+
+    Args:
+        index: 1-based index of the memory item to unpin
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -583,15 +641,24 @@ def gait_unpin(index: int) -> Dict[str, Any]:
 # ---------------------------------------------------------------------
 # Turn recording (auto tracking)
 # ---------------------------------------------------------------------
-@mcp.tool(description="Record a turn and include code artifacts/files created.")
+@mcp.tool()
 @mcp_tool
 def gait_record_turn(
     user_text: str = "",
     assistant_text: str = "",
-    artifacts: Optional[List[Dict[str, str]]] = None, # New: List of {"path": "...", "content": "..."}
+    artifacts: Optional[List[Dict[str, str]]] = None,
     note: str = "vscode-copilot",
     use_memory_snapshot: bool = True,
 ) -> Dict[str, Any]:
+    """Record a turn and include code artifacts/files created.
+
+    Args:
+        user_text: The user's input text
+        assistant_text: The assistant's response text
+        artifacts: List of {"path": "...", "content": "..."} for code files created
+        note: Optional note for the turn (default: vscode-copilot)
+        use_memory_snapshot: Whether to include pinned memory context snapshot
+    """
     repo, err = _try_repo()
     if err: return err
     
@@ -622,10 +689,15 @@ def gait_record_turn(
 # ---------------------------------------------------------------------
 # Revert / reset
 # ---------------------------------------------------------------------
-@mcp.tool(description="Rewind branch history and optionally reset pinned memory. After calling this, you MUST call gait_resume to sync state.")
+@mcp.tool()
 @mcp_tool
 def gait_revert(target: str = "HEAD~1", also_memory: bool = True) -> Dict[str, Any]:
-    """Rewind history and sync AI memory. Instructions included for Copilot to skip recording this turn."""
+    """Rewind branch history and optionally reset pinned memory. After calling this, you MUST call gait_resume to sync state.
+
+    Args:
+        target: Target commit to revert to (default: HEAD~1)
+        also_memory: Whether to also reset pinned memory to match the new state
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -671,9 +743,15 @@ def gait_revert(target: str = "HEAD~1", also_memory: bool = True) -> Dict[str, A
 # ---------------------------------------------------------------------
 # Remote tools
 # ---------------------------------------------------------------------
-@mcp.tool(description="Add a named remote (e.g., origin) pointing to a GAITHUB-compatible base URL.")
+@mcp.tool()
 @mcp_tool
 def gait_remote_add(name: str, url: str) -> Dict[str, Any]:
+    """Add a named remote (e.g., origin) pointing to a GAITHUB-compatible base URL.
+
+    Args:
+        name: Name of the remote (e.g., origin)
+        url: Base URL of the GAITHUB-compatible server
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -683,9 +761,14 @@ def gait_remote_add(name: str, url: str) -> Dict[str, Any]:
     return {"ok": True, "remote": name, "url": url}
 
 
-@mcp.tool(description="List configured remotes (optionally verbose mapping).")
+@mcp.tool()
 @mcp_tool
 def gait_remote_list(verbose: bool = True) -> Dict[str, Any]:
+    """List configured remotes (optionally verbose mapping).
+
+    Args:
+        verbose: If true, include full URL mapping; if false, just names
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -695,9 +778,14 @@ def gait_remote_list(verbose: bool = True) -> Dict[str, Any]:
     return {"ok": True, "remotes": rems if verbose else sorted(list(rems.keys()))}
 
 
-@mcp.tool(description="Get the URL for a configured remote by name (default: origin).")
+@mcp.tool()
 @mcp_tool
 def gait_remote_get(name: str = "origin") -> Dict[str, Any]:
+    """Get the URL for a configured remote by name (default: origin).
+
+    Args:
+        name: Name of the remote to get URL for
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -707,9 +795,17 @@ def gait_remote_get(name: str = "origin") -> Dict[str, Any]:
     return {"ok": True, "remote": name, "url": url}
 
 
-@mcp.tool(description="Create a remote repo on a GAITHUB-compatible server for owner/repo_name.")
+@mcp.tool()
 @mcp_tool
 def gait_repo_create(remote: str, owner: str, repo_name: str, token: str = "") -> Dict[str, Any]:
+    """Create a remote repo on a GAITHUB-compatible server for owner/repo_name.
+
+    Args:
+        remote: Name of the configured remote
+        owner: Owner/organization name for the repo
+        repo_name: Name of the repository to create
+        token: Optional GAITHUB token (uses GAITHUB_TOKEN env var if not provided)
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -721,10 +817,18 @@ def gait_repo_create(remote: str, owner: str, repo_name: str, token: str = "") -
     return {"ok": True, "created": f"{owner}/{repo_name}", "remote": remote}
 
 
-@mcp.tool(description="Push the current (or specified) branch to a GAITHUB-compatible remote repo.")
+@mcp.tool()
 @mcp_tool
 def gait_push(remote: str, owner: str, repo_name: str, branch: str = "", token: str = "") -> Dict[str, Any]:
-    """Push the (current or specified) branch to the named remote; will create remote repo if needed."""
+    """Push the current (or specified) branch to a GAITHUB-compatible remote repo. Will create remote repo if needed.
+
+    Args:
+        remote: Name of the configured remote
+        owner: Owner/organization name for the repo
+        repo_name: Name of the repository
+        branch: Branch to push (default: current branch)
+        token: Optional GAITHUB token (uses GAITHUB_TOKEN env var if not provided)
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -746,9 +850,17 @@ def gait_push(remote: str, owner: str, repo_name: str, branch: str = "", token: 
     return {"ok": True, "pushed": branch or repo.current_branch(), "remote": remote, "owner": owner, "repo": repo_name}
 
 
-@mcp.tool(description="Fetch remote heads and memory refs from a GAITHUB-compatible remote repo.")
+@mcp.tool()
 @mcp_tool
 def gait_fetch(remote: str, owner: str, repo_name: str, token: str = "") -> Dict[str, Any]:
+    """Fetch remote heads and memory refs from a GAITHUB-compatible remote repo.
+
+    Args:
+        remote: Name of the configured remote
+        owner: Owner/organization name for the repo
+        repo_name: Name of the repository
+        token: Optional GAITHUB token (uses GAITHUB_TOKEN env var if not provided)
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -760,7 +872,7 @@ def gait_fetch(remote: str, owner: str, repo_name: str, token: str = "") -> Dict
     return {"ok": True, "remote": remote, "owner": owner, "repo": repo_name, "heads": len(heads), "memory": len(mems)}
 
 
-@mcp.tool(description="Pull a branch from a GAITHUB-compatible remote and merge into current branch. Optionally merge memory.")
+@mcp.tool()
 @mcp_tool
 def gait_pull(
     remote: str,
@@ -770,6 +882,16 @@ def gait_pull(
     with_memory: bool = False,
     token: str = "",
 ) -> Dict[str, Any]:
+    """Pull a branch from a GAITHUB-compatible remote and merge into current branch. Optionally merge memory.
+
+    Args:
+        remote: Name of the configured remote
+        owner: Owner/organization name for the repo
+        repo_name: Name of the repository
+        branch: Branch to pull (default: current branch)
+        with_memory: Whether to also merge pinned memory
+        token: Optional GAITHUB token (uses GAITHUB_TOKEN env var if not provided)
+    """
     repo, err = _try_repo()
     if err:
         return err
@@ -797,7 +919,7 @@ def gait_pull(
     return out
 
 
-@mcp.tool(description="Clone a GAIT repo from a GAITHUB-compatible remote URL into a local folder.")
+@mcp.tool()
 @mcp_tool
 def gait_clone(
     url: str,
@@ -808,6 +930,17 @@ def gait_clone(
     branch: str = "main",
     token: str = "",
 ) -> Dict[str, Any]:
+    """Clone a GAIT repo from a GAITHUB-compatible remote URL into a local folder.
+
+    Args:
+        url: Base URL of the GAITHUB-compatible server
+        owner: Owner/organization name for the repo
+        repo_name: Name of the repository
+        path: Local path to clone into
+        remote: Name for the remote (default: origin)
+        branch: Branch to checkout after clone (default: main)
+        token: Optional GAITHUB token (uses GAITHUB_TOKEN env var if not provided)
+    """
     tok = _get_gaithub_token(token)  # may be None if your server allows anonymous clone
     dest = Path(path).expanduser().resolve()
 
@@ -827,16 +960,22 @@ def gait_clone(
 # ---------------------------------------------------------------------
 # AI Context Recovery Tools
 # ---------------------------------------------------------------------
-@mcp.tool(description="Sync AI state with GAIT history. Call this after a revert or to recover context.")
+@mcp.tool()
 @mcp_tool
 def gait_resume(
     target: str = "HEAD",
     turns: int = 10,
     include_pinned_memory: bool = True,
 ) -> Dict[str, Any]:
-    """
-    Rebuilds the AI's ground truth from GAIT history.
-    Includes explicit instructions for Copilot to avoid 'ghost turns'.
+    """Sync AI state with GAIT history. Call this after a revert or to recover context.
+
+    Rebuilds the AI's ground truth from GAIT history. Includes explicit instructions
+    for Copilot to avoid 'ghost turns'.
+
+    Args:
+        target: Commit to resume from (default: HEAD)
+        turns: Number of recent turns to restore (default: 10)
+        include_pinned_memory: Whether to include pinned memory in the context bundle
     """
     repo, err = _try_repo()
     if err:
@@ -911,7 +1050,7 @@ def gait_resume(
 # ---------------------------------------------------------------------
 # Squash 
 # ---------------------------------------------------------------------
-@mcp.tool(description="Squash the last N turn-commits into one summary commit (context compression). Safe by default (mode=soft creates a backup ref).")
+@mcp.tool()
 @mcp_tool
 def gait_summarize_and_squash(
     last: int = 10,
@@ -920,6 +1059,15 @@ def gait_summarize_and_squash(
     include_merges: bool = False,
     path: Optional[str] = None,
 ) -> Dict[str, Any]:
+    """Squash the last N turn-commits into one summary commit (context compression). Safe by default (mode=soft creates a backup ref).
+
+    Args:
+        last: Number of recent commits to squash (default: 10)
+        mode: Squash mode - 'soft' creates backup ref, 'hard' does not (default: soft)
+        message: Optional message for the squashed commit
+        include_merges: Whether to include merge commits in the squash
+        path: Optional path to the GAIT repository
+    """
     repo, err = _try_repo(path)
     if err:
         return err
