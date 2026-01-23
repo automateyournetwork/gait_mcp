@@ -402,12 +402,15 @@ def gait_status(path: Optional[str] = None) -> Dict[str, Any]:
 
 @mcp_tool
 @mcp.tool()
-def gait_init(path: str = ".") -> Dict[str, Any]:
+def gait_init(path: str) -> Dict[str, Any]:
     """Initialize GAIT tracking in the given folder (refuses filesystem root). Creates the .gait directory.
 
     Args:
-        path: Path to initialize GAIT repository (default: current directory)
+        path: Path to initialize GAIT repository (required)
     """
+    # Handle empty path by defaulting to current directory
+    if not path or not path.strip():
+        path = "."
     root = Path(path).resolve()
     if _is_filesystem_root(root):
         return _err("Refusing to initialize GAIT at filesystem root. cd into a working folder first.", path=str(root))
