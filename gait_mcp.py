@@ -1105,8 +1105,14 @@ def gait_summarize_and_squash(
 
 
 if __name__ == "__main__":
-    log.info("GAIT MCP Server starting (SSE mode)...")
+    import uvicorn
+
+    host = os.environ.get("GAIT_MCP_HOST", "0.0.0.0")
+    port = int(os.environ.get("GAIT_MCP_PORT", "8000"))
+
+    log.info(f"GAIT MCP Server starting (SSE mode on {host}:{port})...")
     try:
-        mcp.run(transport="sse")
+        # Use uvicorn directly to control host/port binding
+        uvicorn.run(mcp.sse_app(), host=host, port=port)
     except Exception as e:
         log.error(f"Server crashed: {e}")
